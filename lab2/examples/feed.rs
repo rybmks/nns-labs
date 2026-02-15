@@ -4,7 +4,7 @@ use burn::optim::decay::WeightDecayConfig;
 use lab2::models::Model;
 use lab2::{config::TrainingConfig, models::FeedForward};
 
-fn main() {
+fn main() -> Result<(), &'static str> {
     type MyBackend = Autodiff<NdArray>;
     let device = burn::backend::ndarray::NdArrayDevice::Cpu;
     let config = TrainingConfig {
@@ -17,8 +17,10 @@ fn main() {
     };
 
     let model = FeedForward::new(&device, 10);
-    model.train::<MyBackend>("./tmp/feed1/burn-regression", &config, true);
+    model.train::<MyBackend>("./tmp/feed1/burn-regression", &config, true)?;
 
     let model = FeedForward::new(&device, 20);
-    model.train::<MyBackend>("./tmp/feed2/burn-regression", &config, true);
+    model.train::<MyBackend>("./tmp/feed2/burn-regression", &config, true)?;
+
+    Ok(())
 }

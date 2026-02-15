@@ -56,7 +56,12 @@ pub trait Model<B: Backend> {
         RegressionOutput::new(loss, output, targets)
     }
 
-    fn train<BA>(self, artifact_dir: &str, config: &TrainingConfig, shuffle: bool)
+    fn train<'a, BA>(
+        self,
+        artifact_dir: &str,
+        config: &TrainingConfig,
+        shuffle: bool,
+    ) -> Result<(), &'a str>
     where
         BA: AutodiffBackend,
         Self: AutodiffModule<BA> + TrainStep<Input = data::RegressionBatch<BA>> + Display + 'static,
@@ -70,7 +75,7 @@ pub trait Model<B: Backend> {
         create_artifact_dir(artifact_dir);
         config
             .save(format!("{artifact_dir}/config.json"))
-            .expect("Config should be saved successfully");
+            .map_err(|_| "Config should be saved successfully")?;
 
         let batcher_train = RegressionBatcher::default();
         let batcher_valid = RegressionBatcher::default();
@@ -99,7 +104,7 @@ pub trait Model<B: Backend> {
         let lr_scheduler =
             LinearLrSchedulerConfig::new(config.learning_rate, 1.0e-5, total_iterations)
                 .init()
-                .expect("failed to create scheduler");
+                .map_err(|_| "failed to create scheduler")?;
 
         let training = SupervisedTraining::new(artifact_dir, dataloader_train, dataloader_test)
             .metrics((LossMetric::new(),))
@@ -112,7 +117,9 @@ pub trait Model<B: Backend> {
         result
             .model
             .save_file(format!("{artifact_dir}/model"), &CompactRecorder::new())
-            .expect("Trained model should be saved successfully");
+            .map_err(|_| "Trained model should be saved successfully")?;
+
+        Ok(())
     }
 }
 

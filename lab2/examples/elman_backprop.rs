@@ -4,7 +4,7 @@ use burn::optim::decay::WeightDecayConfig;
 use lab2::config::TrainingConfig;
 use lab2::models::{self, Model};
 
-fn main() {
+fn main() -> Result<(), &'static str> {
     type MyBackend = Autodiff<NdArray>;
 
     let device = burn::backend::ndarray::NdArrayDevice::Cpu;
@@ -18,8 +18,10 @@ fn main() {
     };
 
     let model = models::ElmanBackprop::try_new(&device, [2, 15, 1]).unwrap();
-    model.train::<MyBackend>("./tmp/elman1/burn-regression", &config, false);
+    model.train::<MyBackend>("./tmp/elman1/burn-regression", &config, false)?;
 
     let model = models::ElmanBackprop::try_new(&device, [2, 5, 5, 5, 1]).unwrap();
-    model.train::<MyBackend>("./tmp/elman2/burn-regression", &config, false);
+    model.train::<MyBackend>("./tmp/elman2/burn-regression", &config, false)?;
+
+    Ok(())
 }
