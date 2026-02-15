@@ -1,5 +1,13 @@
+# Configs
 .vscode
+.Ds_Store
 
+## Rust
+/target
+Cargo.lock
+tmp/
+
+## Python
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
