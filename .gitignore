@@ -6,6 +6,7 @@
 /target
 Cargo.lock
 tmp/
+dataset/
 
 ## Python
 # Byte-compiled / optimized / DLL files
